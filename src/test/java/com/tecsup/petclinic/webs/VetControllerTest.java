@@ -9,7 +9,36 @@ import org.springframework.boot.test.context.SpringBootTest;
 @AutoConfigureMockMvc
 @SpringBootTest
 @Slf4j
+
+
 public class VetControllerTest {
+
+
+    @Test
+    public void testCreateVet() throws Exception {
+        String VET_NAME = "Dr. Smith";
+        int TYPE_ID = 1;
+        int OWNER_ID = 1;
+        String BIRTH_DATE = "1980-06-15";
+
+        Vet newVet = new Vet();
+        newVet.setName(VET_NAME);
+        newVet.setTypeId(TYPE_ID);
+        newVet.setOwnerId(OWNER_ID);
+        newVet.setBirthDate(BIRTH_DATE);
+
+        mockMvc.perform(post("/vets")
+                        .content(om.writeValueAsString(newVet))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name", is(VET_NAME)))
+                .andExpect(jsonPath("$.typeId", is(TYPE_ID)))
+                .andExpect(jsonPath("$.ownerId", is(OWNER_ID)))
+                .andExpect(jsonPath("$.birthDate", is(BIRTH_DATE)));
+    }
+
+
     @Test
     public void testFindVetById() throws Exception {
         int VET_ID = 1; // Reemplazar con un ID existente en la base de datos para probar
