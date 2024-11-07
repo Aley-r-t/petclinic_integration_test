@@ -1,129 +1,71 @@
 package com.tecsup.petclinic.services;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.tecsup.petclinic.entities.Vet;
+import com.tecsup.petclinic.exception.VetNotFoundException;
+import com.tecsup.petclinic.repositories.VetRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import com.tecsup.petclinic.entities.Pet;
-import com.tecsup.petclinic.exception.VetNotFoundException;
-import com.tecsup.petclinic.repositories.VetRepository;
-
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class VetServiceImpl implements VetService {
 
-    VetRepository vetRepository;
+    private final VetRepository vetRepository;
 
-    public VetServiceImpl (VetRepository vetRepository) {
-        this. vetRepository = vetRepository;
+    // Constructor con VetRepository
+    public VetServiceImpl(VetRepository vetRepository) {
+        this.vetRepository = vetRepository;
     }
 
-    /**
-     *
-     * @param pet
-     * @return
-     */
     @Override
-    public Vet create(Pet pet) {
-        return vetRepository.save(pet);
+    public Vet create(Vet vet) {
+        return vetRepository.save(vet);
     }
 
-
-    /**
-     *
-     * @param vet
-     * @return
-     */
     @Override
-    public Vet update(Pet pet) {
-        return VetRepository.save(pet);
+    public Vet update(Vet vet) {
+        return vetRepository.save(vet);
     }
 
-    /**
-     *
-     * @param id
-     * @throws VetNotFoundException
-     */
     @Override
-    public void delete(Integer id) throws VetNotFoundException{
-
+    public void delete(Integer id) throws VetNotFoundException {
         Vet vet = findById(id);
-        petRepository.delete(vet);
+        vetRepository.delete(vet);
     }
-
-    /**
-     *
-     * @param id
-     * @return
-     */
 
     @Override
     public Vet findById(Integer id) throws VetNotFoundException {
-
         Optional<Vet> vet = vetRepository.findById(id);
 
-        if ( !vet.isPresent())
-            throw new VetNotFoundException("Record not found...!");
+        if (!vet.isPresent())
+            throw new VetNotFoundException("Veterinarian record not found...!");
 
         return vet.get();
     }
 
-    /**
-     *
-     * @param name
-     * @return
-     */
-
     @Override
     public List<Vet> findByName(String name) {
+        List<Vet> vets = vetRepository.findByName(name);
 
-        List<Vet> pets = vetRepository.findByName(name);
-
-        vets.stream().forEach(vet -> log.info("" + vet));
+        vets.forEach(vet -> log.info("" + vet));
 
         return vets;
     }
 
-    /**
-     *
-     * @param typeId
-     * @return
-     */
     @Override
     public List<Vet> findByTypeId(int typeId) {
-
         List<Vet> vets = vetRepository.findByTypeId(typeId);
 
-        vets.stream().forEach(vet -> log.info("" + vet));
+        vets.forEach(vet -> log.info("" + vet));
 
         return vets;
     }
 
-    /**
-     *
-     * @param ownerId
-     * @return
-     */
-    @Override
-    public List<Vet> findByOwnerId(int ownerId) {
-
-        List<Vet> vets = vetRepository.findByOwnerId(ownerId);
-
-        vets.stream().forEach(vet -> log.info("" + vet));
-
-        return vets;
-    }
-
-    /**
-     *
-     * @return
-     */
     @Override
     public List<Vet> findAll() {
-        //
         return vetRepository.findAll();
     }
 }
