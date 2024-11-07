@@ -30,7 +30,7 @@ public interface VetService {
      * @param id
      * @throws VetNotFoundException
      */
-    void delete(Interger id) throws VetNotFoundException;
+    void delete(Integer id) throws VetNotFoundException;
 
     /**
      *
@@ -53,18 +53,6 @@ public interface VetService {
      */
     List<Vet> findByTypeId(int typeId);
 
-    /**
-     *
-     * @param ownerId
-     * @return
-     */
-
-    List<Vet> findByOwnerId(int ownerId);
-
-    /**
-     *
-     * @return
-     */
     List<Vet> findAll();
 
 }
