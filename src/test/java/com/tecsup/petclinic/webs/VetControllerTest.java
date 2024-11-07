@@ -12,6 +12,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -26,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class VetControllerTest {
 
     private static final ObjectMapper om = new ObjectMapper();
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +42,7 @@ public class VetControllerTest {
         String VET_NAME = "Dr. Smith";
         int TYPE_ID = 1;
         int OWNER_ID = 1;
-        String BIRTH_DATE = "1980-06-15";
+        Date BIRTH_DATE = dateFormat.parse("1980-06-15");
 
         Vet newVet = new Vet();
         newVet.setName(VET_NAME);
@@ -71,7 +77,7 @@ public class VetControllerTest {
         String VET_NAME = "Dr. Brown";
         int TYPE_ID = 2;
         int OWNER_ID = 2;
-        String BIRTH_DATE = "1975-04-10";
+        Date BIRTH_DATE = dateFormat.parse("1975-04-10");
 
         Vet newVet = new Vet();
         newVet.setName(VET_NAME);
