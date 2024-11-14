@@ -40,10 +40,11 @@ public class VetControllerTest {
 
     @Test
     public void testFindVetOK() throws Exception {
-        String VET_FIRST_NAME = "John";
-        String VET_LAST_NAME = "Doe";
+        // Cambiar los valores a lo que realmente está en la base de datos
+        String VET_FIRST_NAME = "James"; // Valor real en tu respuesta
+        String VET_LAST_NAME = "Carter"; // Valor real en tu respuesta
 
-        mockMvc.perform(get("/vets/1"))  // Cambiar a un ID válido de tu BD
+        mockMvc.perform(get("/vets/1"))  // Asegúrate de que este ID existe en la base de datos
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -51,6 +52,7 @@ public class VetControllerTest {
                 .andExpect(jsonPath("$.firstName", is(VET_FIRST_NAME)))
                 .andExpect(jsonPath("$.lastName", is(VET_LAST_NAME)));
     }
+
 
     @Test
     public void testFindVetKO() throws Exception {
