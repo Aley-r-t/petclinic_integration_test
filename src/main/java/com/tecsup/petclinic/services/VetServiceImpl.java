@@ -41,26 +41,14 @@ public class VetServiceImpl implements VetService {
         Optional<Vet> vet = vetRepository.findById(id);
 
         if (!vet.isPresent())
-            throw new VetNotFoundException("Veterinarian record not found...!");
+            throw new VetNotFoundException("vet no encontrado...!");
 
         return vet.get();
     }
-
     @Override
-    public List<Vet> findByName(String name) {
-        List<Vet> vets = vetRepository.findByName(name);
-
+    public List<Vet> findByLastName(String lastName) {
+        List<Vet> vets = vetRepository.findByLastName(lastName);
         vets.forEach(vet -> log.info("" + vet));
-
-        return vets;
-    }
-
-    @Override
-    public List<Vet> findByTypeId(int typeId) {
-        List<Vet> vets = vetRepository.findByTypeId(typeId);
-
-        vets.forEach(vet -> log.info("" + vet));
-
         return vets;
     }
 

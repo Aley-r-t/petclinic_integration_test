@@ -2,7 +2,7 @@ package com.tecsup.petclinic.webs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import com.tecsup.petclinic.entities.Vet;
+import com.tecsup.petclinic.domain.VetTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,81 +13,80 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.Date;
-import java.text.SimpleDateFormat;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @AutoConfigureMockMvc
 @SpringBootTest
 @Slf4j
-
-
 public class VetControllerTest {
 
     private static final ObjectMapper om = new ObjectMapper();
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
 
     @Autowired
     private MockMvc mockMvc;
 
-
     @Test
-    public void testCreateVet() throws Exception {
-        String VET_NAME = "Dr. Smith";
-        int TYPE_ID = 1;
-        int OWNER_ID = 1;
-        Date BIRTH_DATE = dateFormat.parse("1980-06-15");
+    public void testFindAllVets() throws Exception {
+        int ID_FIRST_RECORD = 1;
 
-        Vet newVet = new Vet();
-        newVet.setName(VET_NAME);
-        newVet.setTypeId(TYPE_ID);
-        newVet.setOwnerId(OWNER_ID);
-        newVet.setBirthDate(BIRTH_DATE);
-
-        mockMvc.perform(post("/vets")
-                        .content(om.writeValueAsString(newVet))
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is(VET_NAME)))
-                .andExpect(jsonPath("$.typeId", is(TYPE_ID)))
-                .andExpect(jsonPath("$.ownerId", is(OWNER_ID)))
-                .andExpect(jsonPath("$.birthDate", is(BIRTH_DATE)));
+        this.mockMvc.perform(get("/vets"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$[0].id", is(ID_FIRST_RECORD)));
     }
 
-
     @Test
-    public void testFindVetById() throws Exception {
-        int VET_ID = 1; // Reemplazar con un ID existente en la base de datos para probar
+    public void testFindVetOK() throws Exception {
+        String VET_FIRST_NAME = "John";
+        String VET_LAST_NAME = "Doe";
 
-        mockMvc.perform(get("/vets/" + VET_ID))
+        mockMvc.perform(get("/vets/1"))  // Cambiar a un ID válido de tu BD
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(VET_ID)));
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.firstName", is(VET_FIRST_NAME)))
+                .andExpect(jsonPath("$.lastName", is(VET_LAST_NAME)));
     }
+
+    @Test
+    public void testFindVetKO() throws Exception {
+        mockMvc.perform(get("/vets/666"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testCreateVet() throws Exception {
+        String VET_FIRST_NAME = "Sarah";
+        String VET_LAST_NAME = "Connor";
+
+        VetTO newVetTO = new VetTO();
+        newVetTO.setFirstName(VET_FIRST_NAME);
+        newVetTO.setLastName(VET_LAST_NAME);
+
+        mockMvc.perform(post("/vets")
+                        .content(om.writeValueAsString(newVetTO))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.firstName", is(VET_FIRST_NAME)))
+                .andExpect(jsonPath("$.lastName", is(VET_LAST_NAME)));
+    }
+
     @Test
     public void testDeleteVet() throws Exception {
-        String VET_NAME = "Dr. Brown";
-        int TYPE_ID = 2;
-        int OWNER_ID = 2;
-        Date BIRTH_DATE = dateFormat.parse("1975-04-10");
+        String VET_FIRST_NAME = "Mark";
+        String VET_LAST_NAME = "Smith";
 
-        Vet newVet = new Vet();
-        newVet.setName(VET_NAME);
-        newVet.setTypeId(TYPE_ID);
-        newVet.setOwnerId(OWNER_ID);
-        newVet.setBirthDate(BIRTH_DATE);
+        VetTO newVetTO = new VetTO();
+        newVetTO.setFirstName(VET_FIRST_NAME);
+        newVetTO.setLastName(VET_LAST_NAME);
 
-        // Crear el veterinario
         ResultActions mvcActions = mockMvc.perform(post("/vets")
-                        .content(om.writeValueAsString(newVet))
+                        .content(om.writeValueAsString(newVetTO))
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isCreated());
@@ -95,9 +94,61 @@ public class VetControllerTest {
         String response = mvcActions.andReturn().getResponse().getContentAsString();
         Integer id = JsonPath.parse(response).read("$.id");
 
-        // Eliminar el veterinario
         mockMvc.perform(delete("/vets/" + id))
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void testDeleteVetKO() throws Exception {
+        mockMvc.perform(delete("/vets/1000"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testUpdateVet() throws Exception {
+        String VET_FIRST_NAME = "Anna";
+        String VET_LAST_NAME = "Williams";
+
+        String UP_VET_FIRST_NAME = "Anna Marie";
+        String UP_VET_LAST_NAME = "Williams-Smith";
+
+        VetTO newVetTO = new VetTO();
+        newVetTO.setFirstName(VET_FIRST_NAME);
+        newVetTO.setLastName(VET_LAST_NAME);
+
+        // CREATE
+        ResultActions mvcActions = mockMvc.perform(post("/vets")
+                        .content(om.writeValueAsString(newVetTO))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated());
+
+        String response = mvcActions.andReturn().getResponse().getContentAsString();
+        Integer id = JsonPath.parse(response).read("$.id");
+
+        // UPDATE
+        VetTO upVetTO = new VetTO();
+        upVetTO.setId(id);
+        upVetTO.setFirstName(UP_VET_FIRST_NAME);
+        upVetTO.setLastName(UP_VET_LAST_NAME);
+
+        mockMvc.perform(put("/vets/" + id)
+                        .content(om.writeValueAsString(upVetTO))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // FIND
+        mockMvc.perform(get("/vets/" + id))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(id)))
+                .andExpect(jsonPath("$.firstName", is(UP_VET_FIRST_NAME)))
+                .andExpect(jsonPath("$.lastName", is(UP_VET_LAST_NAME)));
+
+        // DELETE
+        mockMvc.perform(delete("/vets/" + id))
+                .andExpect(status().isOk());
+    }
 }

@@ -19,13 +19,8 @@ public class VetTO {
 
     private Integer id;
 
-    private String name;
+    private String firstName;
 
-    private int typeId;
-
-    private int ownerId;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private String birthDate;
+    private String lastName;
 
 }

@@ -1,15 +1,14 @@
 package com.tecsup.petclinic.repositories;
 
-import com.tecsup.petclinic.entities.Vet;
-import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import com.tecsup.petclinic.entities.Vet;
 
 import java.util.List;
 
+@Repository
 public interface VetRepository extends JpaRepository<Vet, Integer> {
-    List<Vet> findByName(String lastName);
-    List<Vet> findByTypeId(Integer TypeId);
 
-    @Override
-    List<Vet> findAll();
+    // Buscar veterinarios por lastName
+    List<Vet> findByLastName(String lastName);
 }
